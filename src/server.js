@@ -23,21 +23,21 @@ export const setupServer = () => {
   app.use(cors());
 
   // Налаштовуємо Pino для логування запитів
-  app.use(
+  /*  app.use(
     pino({
-      level: 'info', // Устанавливаем уровень логирования (info, debug, error и т.д.)
+      level: 'info',
       transport: {
         target: 'pino-pretty',
         options: {
-          translateTime: 'SYS:standard', // Читаемые временные метки
-          colorize: true, // Включаем цветную схему
-          levelFirst: true, // Показ уровня логирования первым
-          ignore: 'pid,hostname', // Убираем ненужные поля pid и hostname
-          errorProps: 'stack', // Показываем стек ошибок
+          translateTime: 'SYS:standard',
+          colorize: true,
+          levelFirst: true,
+          ignore: 'pid,hostname',
+          errorProps: 'stack',
         },
       },
     }),
-  );
+  ); */
 
   // Роут для кореневого запиту
   app.get('/', (req, res) => {
