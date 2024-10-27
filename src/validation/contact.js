@@ -27,6 +27,7 @@ export const contactSchema = Joi.object({
     'any.required': 'Contact type is required',
     'any.only': 'Contact type must be one of work, home, or personal',
   }),
+  userId: Joi.string(),
 });
 
 export const updateContactSchema = Joi.object({
@@ -40,7 +41,7 @@ export const updateContactSchema = Joi.object({
     'string.min': 'Phone number should have at least {#limit} characters',
     'string.max': 'Phone number should have at most {#limit} characters',
   }),
-  email: Joi.string().min(3).max(20).messages({
+  email: Joi.string().min(3).max(50).email().messages({
     'string.base': 'Email should be a string',
     'string.min': 'Email should have at least {#limit} characters',
     'string.max': 'Email should have at most {#limit} characters',
@@ -52,4 +53,5 @@ export const updateContactSchema = Joi.object({
     'string.base': 'Contact type should be a string',
     'any.only': 'Contact type must be one of [work, home, personal]',
   }),
+  userId: Joi.string(),
 });

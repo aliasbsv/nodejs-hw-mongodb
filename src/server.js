@@ -1,8 +1,9 @@
 import express from 'express';
-import cors from 'cors'; // CORS для керування доступом до ресурсів з інших доменів
-import pino from 'pino-http'; // Pino для логування запитів
+import cors from 'cors';
+import routes from './routers/index.js';
+import cookieParser from 'cookie-parser';
+/* import pino from 'pino-http';  */
 import { env } from './utils/env.js';
-import router from './routers/contacts.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
@@ -10,14 +11,14 @@ const PORT = Number(env('PORT', '3000'));
 
 export const setupServer = () => {
   const app = express();
+
+  app.use(cookieParser());
+
   app.use(
     express.json({
       type: ['application/json', 'application/vnd.api+json'],
     }),
   );
-
-  // Налаштовуємо middleware для обробки JSON
-  //app.use(express.json());
 
   // Налаштовуємо CORS middleware для обробки запитів з інших доменів
   app.use(cors());
@@ -39,15 +40,14 @@ export const setupServer = () => {
     }),
   ); */
 
+  app.use('/', routes);
+
   // Роут для кореневого запиту
   app.get('/', (req, res) => {
     res.json({
       message: 'Server is enable',
     });
   });
-
-  // Додаємо роутер до app як middleware
-  app.use(router);
 
   // Обробка неіснуючих роутів (404 помилка)
   app.use('*', notFoundHandler);
