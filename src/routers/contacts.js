@@ -18,14 +18,14 @@ const jsonParser = express.json();
 //Створюємо маршрути для GET-запитів
 router.get('/', ctrlWrapper(getContactsController));
 
-router.get('/:id', isValidId, ctrlWrapper(getContactByIdController));
+router.get('/:contactId', isValidId, ctrlWrapper(getContactByIdController));
 
 router.post('/', jsonParser, validateBody(contactSchema), ctrlWrapper(createContactController));
 
-router.delete('/:id', isValidId, ctrlWrapper(deleteContactController));
+router.delete('/:contactId', isValidId, ctrlWrapper(deleteContactController));
 
 router.patch(
-  '/:id',
+  '/:contactId',
   isValidId,
   jsonParser,
   validateBody(updateContactSchema),

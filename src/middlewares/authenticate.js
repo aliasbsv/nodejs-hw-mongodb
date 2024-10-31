@@ -1,76 +1,45 @@
 import createHttpError from 'http-errors';
-import { User } from '../db/models/user.js';
-import { Session } from '../db/models/session.js';
+import { User } from '../db/models/user.js'; // Модель пользователя для получения данных о пользователе
+import { Session } from '../db/models/session.js'; // Модель сессии для проверки токена доступа
 
-export const authenticate = async (req, res, next) => {
-  const authHeader = req.get('Authorization');
-
-  if (!authHeader) {
-    next(createHttpError(401, 'Please provide Authorization header'));
-    return;
-  }
-
-  const bearer = authHeader.split(' ')[0];
-  const token = authHeader.split(' ')[1];
-
-  if (bearer !== 'Bearer' || !token) {
-    next(createHttpError(401, 'Auth header should be of type Bearer'));
-    return;
-  }
-
-  const session = await Session.findOne({ accessToken: token });
-
-  if (!session) {
-    next(createHttpError(401, 'Session not found'));
-    return;
-  }
-
-  const isAccessTokenExpired = new Date() > new Date(session.accessTokenValidUntil);
-
-  if (isAccessTokenExpired) {
-    next(createHttpError(401, 'Access token expired'));
-  }
-
-  const user = await User.findById(session.userId);
-
-  if (!user) {
-    next(createHttpError(401, 'Session not found'));
-    return;
-  }
-
-  req.user = user;
-
-  next();
-};
-
-/*
+// Middleware для аутентификации пользователя по токену доступа
 export async function authenticate(req, res, next) {
   const { authorization } = req.headers;
 
+  // Проверяем, предоставлен ли заголовок Authorization
   if (typeof authorization !== 'string') {
-    return next(createHttpError(401, 'Pleace provide access token'));
+    return next(createHttpError(401, 'Please provide Authorization header'));
   }
+
+  // Разделяем заголовок на тип токена и сам токен
   const [bearer, accessToken] = authorization.split(' ', 2);
 
+  // Проверяем, что заголовок имеет формат "Bearer <token>"
   if (bearer !== 'Bearer' || typeof accessToken !== 'string') {
-    return next(createHttpError(401, 'Pleace provide access token'));
+    return next(createHttpError(401, 'Authorization header must be of type Bearer'));
   }
+
+  // Ищем сессию, соответствующую токену доступа
   const session = await Session.findOne({ accessToken });
-  if (session === null) {
-    return next(createHttpError(401, 'Session not found successfully'));
+
+  if (!session) {
+    return next(createHttpError(401, 'Session not found')); // Если сессия не найдена, возвращаем ошибку 401
   }
 
-  if (new Date() > session.accessTokenValidUntil) {
-    return next(createHttpError(401, 'Access token expired'));
+  // Проверяем, не истек ли срок действия токена
+  if (new Date() > new Date(session.accessTokenValidUntil)) {
+    return next(createHttpError(401, 'Access token expired')); // Если истек, возвращаем ошибку 401
   }
 
+  // Получаем пользователя по userId из сессии
   const user = await User.findById(session.userId);
 
-  if (user === null) {
-    return next(createHttpError(401, 'Session not found'));
+  if (!user) {
+    return next(createHttpError(401, 'User not found')); // Если пользователь не найден, возвращаем ошибку 401
   }
 
-  req.user = { id: user._id, name: user.name };
+  // Сохраняем данные пользователя в req.user для доступа в последующих middleware
+  req.user = { _id: user._id, name: user.name };
 
-  next();
-} */
+  next(); // Передаем управление следующему middleware
+}
