@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises';
 import {
   createContact,
   deleteContact,
@@ -9,6 +10,7 @@ import createHttpError from 'http-errors';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
+import { uploadToCloudinary } from '../utils/uploadToCloudinary.js';
 
 /*  Контроллер для получения всех контактов с поддержкой фильтрации, пагинации и сортировки. */
 export const getContactsController = async (req, res) => {
@@ -38,9 +40,6 @@ export const getContactByIdController = async (req, res) => {
   const { contactId } = req.params;
   const userId = req.user._id;
 
-  console.log('Contact ID:', contactId); // Логирование ID контакта
-  console.log('User ID:', userId); // Логирование ID пользователя
-
   // Получение контакта по ID и userId для проверки прав доступа
   const contact = await getContactById(contactId, userId);
   if (!contact) {
@@ -56,10 +55,16 @@ export const getContactByIdController = async (req, res) => {
 
 /* Контроллер для создания нового контакта.*/
 export const createContactController = async (req, res) => {
-  const userId = req.user._id;
+  let photo = null;
+  if (typeof req.file !== 'undefined') {
+    const result = await uploadToCloudinary(req.file.path);
+    await fs.unlink(req.file.path);
+    photo = result.secure_url;
+  }
 
+  const userId = req.user._id;
   // Добавление userId к данным нового контакта
-  const newContact = { ...req.body, userId };
+  const newContact = { ...req.body, userId, photo };
   const contact = await createContact(newContact);
   res.status(201).json({
     status: 201,
@@ -83,15 +88,22 @@ export const deleteContactController = async (req, res) => {
 /* Контроллер для обновления существующего контакта по ID. */
 export const patchContactController = async (req, res) => {
   const { contactId } = req.params;
-  const payload = req.body;
   const userId = req.user._id;
-  // Обновление контакта по contactId, userId и новым данным
+  const payload = { ...req.body };
+
+  // Если передан файл, загружаем его в Cloudinary и добавляем ссылку на фото в payload
+  if (req.file) {
+    const result = await uploadToCloudinary(req.file.path);
+    await fs.unlink(req.file.path); // Удаляем временный файл после загрузки
+    payload.photo = result.secure_url; // Добавляем ссылку на фото в payload
+  }
+
+  // Обновляем контакт по contactId, userId и обновленному payload
   const updatedContact = await updateContact(contactId, payload, userId);
   if (!updatedContact) {
-    // Если контакт не найден, возвращаем ошибку 404
     throw createHttpError(404, 'Contact not found');
   }
-  // Возвращение успешного ответа с обновленными данными контакта
+
   res.json({
     status: 200,
     message: 'Successfully updated the contact!',

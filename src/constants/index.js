@@ -17,3 +17,9 @@ export const SMTP = {
 
 export const TEMPLATES_DIR = path.join(process.cwd(), 'src', 'templates');
 export const RESET_PWD_PATH = path.join(TEMPLATES_DIR, 'reset-password.html');
+
+export const CLOUDINARY = {
+  CLOUD_NAME: env('CLOUD_NAME'),
+  API_KEY: env('API_KEY'),
+  API_SECRET: env('API_SECRET'),
+};
