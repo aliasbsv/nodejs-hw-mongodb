@@ -1,4 +1,11 @@
-import { registerUser, loginUser, logoutUser, refreshSession } from '../service/auth.js';
+import {
+  registerUser,
+  loginUser,
+  logoutUser,
+  refreshSession,
+  requestResetPassword,
+  resetPassword,
+} from '../service/auth.js';
 
 /* Настраивает параметры для создания сессионных cookies.
  * @param {object} res - объект ответа Express
@@ -67,5 +74,33 @@ export async function refreshController(req, res) {
     data: {
       accessToken: session.accessToken,
     },
+  });
+}
+
+/* Контроллер для сброса пароля пользователя. Отправляет ссылку для сброса пароля на указанный email. */
+export async function resetPasswordController(req, res) {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({
+      status: 400,
+      message: 'Email is required',
+    });
+  }
+  await requestResetPassword(email);
+  res.status(200).json({
+    status: 200,
+    message: 'Reset password email was successfully sent!',
+    data: {},
+  });
+}
+
+/* Контроллер для сброса пароля пользователя. Обновляет пароль пользователя. */
+export async function requestPasswordController(req, res) {
+  const { password, token } = req.body;
+  await resetPassword(password, token);
+  res.json({
+    status: 200,
+    message: 'Password has been successfully reset.',
+    data: {},
   });
 }

@@ -12,6 +12,8 @@ import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { validateBody } from '../middlewares/validateBody.js';
 import { contactSchema, updateContactSchema } from '../validation/contact.js';
 
+import { upload } from '../middlewares/upload.js';
+
 const router = express.Router();
 const jsonParser = express.json();
 
@@ -20,12 +22,19 @@ router.get('/', ctrlWrapper(getContactsController));
 
 router.get('/:contactId', isValidId, ctrlWrapper(getContactByIdController));
 
-router.post('/', jsonParser, validateBody(contactSchema), ctrlWrapper(createContactController));
+router.post(
+  '/',
+  upload.single('photo'),
+  jsonParser,
+  validateBody(contactSchema),
+  ctrlWrapper(createContactController),
+);
 
 router.delete('/:contactId', isValidId, ctrlWrapper(deleteContactController));
 
 router.patch(
   '/:contactId',
+  upload.single('photo'),
   isValidId,
   jsonParser,
   validateBody(updateContactSchema),
