@@ -1,0 +1,51 @@
+type: object
+required:
+  - _id
+  - name
+  - phoneNumber
+  - email
+  - contactType
+properties:
+  _id:
+    description: "Contact's id"
+    type: string
+    example: 671b3a69a4f2775d477049fc
+  name:
+    description: "Contact's name"
+    type: string
+    example: 'John Doe'
+  phoneNumber:
+    description: "Contact's phone number"
+    type: string
+    example: '0991234567'
+  email:
+    description: "Contact's email"
+    type: string
+    example: mail@example.com
+  isFavourite:
+    description: 'Whether is contact in special (favourite) list'
+    type: boolean
+    example: false
+    default: false
+  contactType:
+    description: "Contact's type (default: personal)"
+    type: string
+    enum: ['work', 'home', 'personal']
+    default: personal
+  userId:
+    description: "Contact's owner id (generated while register user)"
+    type: string
+    example: 671b3a69a4f2775d477049fc
+  createdAt:
+    description: 'DB-generated on create'
+    type: string
+    example: '2024-10-25T06:27:53.173Z'
+  updatedAt:
+    description: 'DB-generated on update'
+    type: string
+    example: '2024-10-25T11:54:04.888Z'
+  photo:
+    description: "Link to contact's photo"
+    type: string
+    example: https://res.cloudinary.com/deoxrcsvx/image/upload/v1729857245/image.png
+    default: null

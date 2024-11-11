@@ -1,0 +1,50 @@
+tags:
+  - Auth
+summary: Refresh session
+operationId: refreshSession
+description: 'Refresh session'
+security:
+  - bearerAuth: []
+requestBody:
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - password
+          - token
+        properties:
+          password:
+            description: "User's new password"
+            type: string
+            example: eR4#o8^
+          token:
+            description: 'Token for secure reset password'
+            type: string
+            example: erJhbGciOiJIUzI1NiIsInR5cCI6IkpXVC39.eyJzdWIiOiI2NzE5NTVjr2FjNzExOTllYzFhZTNiMTEiLhJlbWFpbCI6ImFGdG9ucG9reWRrb0BnbWFpbC5jb20iLCJdYXQiOjE3Mjk4MjgxODgsImV4cCI6MTcyOTgyODQ4OH0.XJHdNVrGM4fA12SszdaXuabOXRntDNo357nt-ezaU_0
+responses:
+  '200':
+    description: Reset password
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully refreshed a session!
+            data:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                  example: 4jyvRRbQPTHGz9oRjK02fd+Hjk2k4e5gghRQj7t0
+  '401':
+    $ref: '../../../components/responses/401.yaml'

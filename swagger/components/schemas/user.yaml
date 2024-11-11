@@ -1,0 +1,30 @@
+type: object
+required:
+  - name
+  - email
+  - _id
+properties:
+  name:
+    description: "User's name"
+    type: string
+    example: 'Johnny Doeh'
+  email:
+    description: "User's email"
+    type: string
+    example: mail@example.com
+  _id:
+    description: "User's ID (given auto)"
+    type: string
+    example: 671b3a69a4f2775d477049fc
+  createdAt:
+    description: 'DB-generated on register'
+    type: string
+    example: '2024-10-25T06:27:53.173Z'
+  updatedAt:
+    description: 'DB-generated on update'
+    type: string
+    example: '2024-10-25T11:54:04.888Z'
+  # photo:
+  #   description: "Link to contact's photo"
+  #   type: string
+  #   example: https://res.cloudinary.com/deoxrcsvx/image/upload/v1729857245/image.png

@@ -7,15 +7,12 @@ import cookieParser from 'cookie-parser';
 import { env } from './utils/env.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import { swaggerDocs } from './middlewares/swaggerDocs.js';
 
 const PORT = Number(env('PORT', '3000'));
 
 export const setupServer = () => {
   const app = express();
-
-  app.use('/photos', express.static(path.resolve('src', 'public/photos')));
-
-  app.use(cookieParser());
 
   app.use(
     express.json({
@@ -23,8 +20,14 @@ export const setupServer = () => {
     }),
   );
 
+  app.use('/photos', express.static(path.resolve('src', 'public/photos')));
+
+  app.use('/api-docs', swaggerDocs());
+
   // Налаштовуємо CORS middleware для обробки запитів з інших доменів
   app.use(cors());
+
+  app.use(cookieParser());
 
   // Налаштовуємо Pino для логування запитів
   /*  app.use(
